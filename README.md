@@ -146,5 +146,7 @@ Create a script named `monitoring.sh` in Bash that outputs key system metrics ev
 - [Debian Documentation](https://www.debian.org/doc/)
 - [Rocky Linux Documentation](https://docs.rockylinux.org/)
 - [VirtualBox User Manual](https://www.virtualbox.org/manual/UserManual.html)
+- [42 Cursus Born2beRoot Guide](https://42-cursus.gitbook.io/guide/rank-01/born2beroot)
+- [Born2BeRoot Guide by pasqualerossi](https://github.com/pasqualerossi/Born2BeRoot-Guide)
 
 Good luck with the **Born2beRoot** project! Follow this roadmap carefully to secure a successful evaluation and gain comprehensive system administration skills.
