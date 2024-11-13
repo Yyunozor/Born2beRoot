@@ -1,0 +1,26 @@
+# Testers
+printfTester/
+.printfTester/
+
+# Object files
+*.o
+
+# Libraries
+*.a
+
+# Executables
+*.out
+a.out
+
+# MacOS system files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# VSCode settings
+.vscode/
+
+# Debug files
+*.dSYM/
