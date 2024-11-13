@@ -11,10 +11,9 @@ Welcome to the **Born2beRoot** project! This roadmap is designed to help you sys
    - [User and Security Policies](#user-and-security-policies)
    - [Monitoring Script](#monitoring-script)
 3. [Bonus Objectives](#bonus-objectives)
-   - [Additional Hardening Measures](#additional-hardening-measures)
-   - [Advanced User and Group Management](#advanced-user-and-group-management)
-   - [System Recovery Preparations](#system-recovery-preparations)
-   - [Networking and Additional Services](#networking-and-additional-services)
+   - [Partition Setup](#partition-setup)
+   - [WordPress Setup](#wordpress-setup)
+   - [Additional Service Setup](#additional-service-setup)
 4. [Testing and Documentation](#testing-and-documentation)
 
 ---
@@ -112,46 +111,26 @@ Create a script named `monitoring.sh` in Bash that outputs key system metrics ev
 
 ## Bonus Objectives
 
-### Additional Hardening Measures
+### Partition Setup
 
-1. **Intrusion Detection**:
-   - Install and configure `fail2ban` to prevent brute-force attacks.
+- Set up the disk partitions to achieve a structure similar to the one specified in the guidelines. Use LVM to ensure flexibility and encryption for increased security.
 
-2. **Enhanced Logging**:
-   - Use `rsyslog` or similar for centralized logging of system events and user actions.
+### WordPress Setup
 
-3. **Resource Limits**:
-   - Apply resource limits per session using `ulimit` to control CPU and memory usage.
+- Set up a functional WordPress website using **lighttpd**, **MariaDB**, and **PHP**.
+  - **Lighttpd Setup**: Install and configure **lighttpd** by editing `/etc/lighttpd/lighttpd.conf`. Ensure the server listens on a custom port to avoid conflicts.
+  - **Database Setup**: Install **MariaDB** and create a database for WordPress. Secure the database using `mysql_secure_installation`.
+  - **PHP Configuration**: Install **PHP** and necessary modules (`php-mysql`, `php-cgi`). Configure **lighttpd** to process PHP by enabling the `mod_fastcgi` module.
+  - **Secure WordPress**: Harden the WordPress installation by using strong passwords, limiting login attempts, and setting correct file permissions (`chmod 755 wp-content`).
 
----
+### Additional Service Setup
 
-### Advanced User and Group Management
+- Set up a service of your choice (excluding **NGINX** or **Apache2**).
+  - **Justification**: Be prepared to justify why this service is useful for a server environment.
+  - **Service Hardening**: Ensure that the service is securely configured, including proper user permissions, firewall rules, and logging.
+- You may open more ports to suit your needs for the additional services. Adapt **UFW/Firewalld** rules accordingly.
 
-1. **Automatic Account Lock**:
-   - Lock accounts after multiple failed login attempts.
-
-2. **Advanced Sudo Policies**:
-   - Define specific `sudo` permissions for critical commands using detailed entries in the `sudoers` file.
-
----
-
-### System Recovery Preparations
-
-1. **Automated Backups**:
-   - Use `cron` to automate backups of critical data and system configurations.
-
-2. **Snapshot Management**:
-   - Set up automated snapshots for quick rollback in case of failure.
-
----
-
-### Networking and Additional Services
-
-1. **Network Time Protocol (NTP)**:
-   - Use `ntpd` or `chrony` to synchronize server time.
-
-2. **Advanced Firewall Rules**:
-   - Configure additional firewall rules, considering VPN tunneling for secure access.
+*Note*: The bonus part will only be assessed if the mandatory part is **perfect**—meaning all mandatory requirements are fully met and function correctly.
 
 ---
 
