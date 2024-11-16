@@ -149,6 +149,7 @@ Create a script named `monitoring.sh` in Bash that outputs key system metrics ev
 - [42 Cursus Born2beRoot Guide](https://42-cursus.gitbook.io/guide/rank-01/born2beroot)
 - [Born2BeRoot Guide by pasqualerossi](https://github.com/pasqualerossi/Born2BeRoot-Guide)
 - [Born2BeRoot Guide by mathieu-soysal](https://mathieu-soysal.gitbook.io/born2beroot/installing-debian/non-bonus-partition-disks)
+- [Born2BeRoot Guide by gemartin99](https://github.com/gemartin99/Born2beroot-Tutorial/blob/main/README_EN.md)
 
 ---
 
