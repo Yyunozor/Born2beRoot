@@ -157,3 +157,4 @@ Create a script named `monitoring.sh` in Bash that outputs key system metrics ev
 Born2BeRoot is a challenging project that will strengthen your skills in Linux system administration, virtualization, and security. By following this detailed roadmap, you will be well-prepared to complete both the mandatory and bonus parts of the project successfullyi.
 
 ---
+
