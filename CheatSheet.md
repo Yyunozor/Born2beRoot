@@ -1,68 +1,120 @@
 # **Born2beRoot Cheat Sheet**
 
-## **1. Preliminary Checks**
+## **1. Preliminary Setup**
 
-- **Verify Git Repository**:
-    - Check the repository for `signature.txt` and compare the signature with the `.vdi` file:
+- **Repository Check**:
+    - Ensure the repository contains `signature.txt` with the correct VM signature:
         
         ```bash
-        Copy code
         sha1sum <vm>.vdi
         
         ```
         
-- **Boot the VM**:
-    - Ensure the VM starts without issues and no graphical interface is installed.
-- **Login**:
-    - Use a non-root user and confirm password policies:
-        - **Expiration**: 30 days.
-        - **Minimum age**: 2 days.
-        - **Warning**: 7 days before expiration.
-        - **Complexity**: At least 10 characters, uppercase, lowercase, and numbers.
+    - Compare the result with the content of `signature.txt`.
+- **Launch VM**:
+    - Verify that the VM boots correctly and **no GUI** is installed.
+    - Ensure all required services (e.g., SSH, UFW) are running.
 
 ---
 
 ## **2. Mandatory Configuration**
 
-### **General Configuration**
+### **2.1 General Configuration**
 
 - **Hostname**:
-    - Check hostname:
+    - Display the hostname:
         
         ```bash
         hostname
         
         ```
         
-    - Change hostname:
+    - Change the hostname:
         
         ```bash
         sudo hostnamectl set-hostname <new_hostname>
         
         ```
         
-- **Partitions**:
-    - List partitions:
+    - Ensure persistence after reboot.
+- **Partitioning**:
+    - View disk partitions:
         
         ```bash
         lsblk
         
         ```
         
-    - Check LVM usage:
+    - Verify LVM (Logical Volume Manager):
         
         ```bash
         lvdisplay
         
         ```
         
-    - **Explain**: Benefits of LVM include dynamic resizing and snapshot capabilities.
+    - **Explanation**: LVM allows dynamic resizing and efficient storage management.
 
 ---
 
-### **Sudo Configuration**
+### **2.2 Users and Groups**
 
-- **Verify Logging**:
+- **Default User**:
+    - Check user information:
+        
+        ```bash
+        getent passwd <username>
+        
+        ```
+        
+    - Ensure the user belongs to `sudo` and `user42` groups:
+        
+        ```bash
+        groups <username>
+        
+        ```
+        
+- **Create a New User**:
+    
+    ```bash
+    sudo adduser <new_user>
+    
+    ```
+    
+- **Password Policy**:
+    - Set password policies in `/etc/login.defs` and `/etc/security/pwquality.conf`.
+    - Rules:
+        - Expire passwords every 30 days.
+        - Minimum age: 2 days.
+        - Warn users 7 days before expiration.
+        - Require at least 10 characters (uppercase, lowercase, numbers).
+- **Groups**:
+    - Create a new group:
+        
+        ```bash
+        sudo groupadd evaluating
+        
+        ```
+        
+    - Add the user to the group:
+        
+        ```bash
+        sudo usermod -aG evaluating <new_user>
+        
+        ```
+        
+
+---
+
+### **2.3 Sudo Configuration**
+
+- **Check Sudo Installation**:
+    
+    ```bash
+    sudo -V
+    
+    ```
+    
+- **Sudo Logs**:
     - Ensure `/var/log/sudo/` exists:
         
         ```bash
@@ -70,66 +122,84 @@
         
         ```
         
-    - Check logs dynamically:
+    - View logs:
         
         ```bash
         sudo cat /var/log/sudo/sudo.log
         
         ```
         
-- **Configuration Rules**:
-    - Verify the following:
-        - **Password attempts**: Limited to 3 (`passwd_tries=3`).
-        - **Custom error message**: Displays a personalized message.
-        - **Input/Output logging**: Commands and results logged (`log_input`, `log_output`).
+- **Sudo Rules**:
+    - Limit authentication retries:
+        
+        ```makefile
+        passwd_tries=3
+        
+        ```
+        
+    - Log input/output:
+        
+        ```
+        log_input, log_output
+        
+        ```
+        
+    - Display a custom error message:
+        
+        ```makefile
+        badpass_message="Custom error message"
+        
+        ```
+        
+    - Restrict sudo paths:
+        
+        ```makefile
+        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+        
+        ```
+        
 
 ---
 
-### **Firewall (UFW/Firewalld)**
+### **2.4 Firewall (UFW or Firewalld)**
 
-- **Check Status**:
+- **Check UFW**:
     
     ```bash
     sudo ufw status
     
     ```
     
-- **Ensure Port 4242 is Open**:
-    
-    ```bash
-    sudo ufw allow 4242
-    sudo ufw reload
-    
-    ```
-    
-- **Add and Remove Rules**:
-    - Add a rule:
+- **Rules**:
+    - Allow port 4242:
         
         ```bash
-        sudo ufw allow 8080
+        sudo ufw allow 4242
+        sudo ufw reload
         
         ```
         
-    - Remove a rule:
+    - Add and remove rules:
         
         ```bash
-        sudo ufw delete allow 8080
+        sudo ufw allow <port>
+        sudo ufw delete allow <port>
         
         ```
         
 
 ---
 
-### **SSH Configuration**
+### **2.5 SSH Configuration**
 
-- **Verify SSH**:
-    - Check status:
-        
-        ```bash
-        sudo systemctl status ssh
-        
-        ```
-        
+- **Check SSH Status**:
+    
+    ```bash
+    sudo systemctl status ssh
+    
+    ```
+    
+- **Verify Configuration**:
     - Ensure SSH uses port 4242:
         
         ```bash
@@ -144,207 +214,85 @@
         
         ```
         
-- **Test SSH Connection**:
-    
-    ```bash
-    ssh <username>@<ip_address> -p 4242
-    
-    ```
-    
-
----
-
-## **3. Monitoring Script**
-
-### **Key Features**
-
-- **Information Displayed**:
-    - Architecture, CPU details, memory usage, disk usage, CPU load, last boot time, LVM status, TCP connections, logged-in users, network info, and sudo command count.
-- **Runs Every 10 Minutes**:
-    - Scheduled using `cron`.
-
-### **Cron Command**
-
-Check the cron jobs:
-
-```bash
-crontab -l
-
-```
-
-### **Monitoring Script**
-
-```bash
-#!/bin/bash
-
-# Function to format and print output
-print_info() {
-  printf "%-20s: %s\n" "$1" "$2"
-}
-
-# Gather system information
-get_architecture() {
-  uname -a | sed ':a;N;$!ba;s/\n/\n                    /g'
-}
-
-get_cpu_info() {
-  physical=$(grep "physical id" /proc/cpuinfo | sort -u | wc -l)
-  virtual=$(grep -c "processor" /proc/cpuinfo)
-  echo "$physical physical cores, $virtual virtual cores"
-}
-
-get_memory_info() {
-  free --mega | awk '/^Mem:/ {printf "%d/%dMB (%.2f%%)", $3, $2, $3/$2 * 100}'
-}
-
-get_disk_info() {
-  df -Bm | awk '$NF!~/boot/ && $NF~"^/" {used+=$3; total+=$2} END {printf "%d/%dGB (%d%%)", used/1024, total/1024, (used/total)*100}'
-}
-
-get_cpu_load() {
-  idle=$(vmstat 1 2 | tail -1 | awk '{print $15}')
-  awk "BEGIN {print 100 - $idle \"%\"}"
-}
-
-get_last_boot() {
-  who -b | awk '{print $3, $4}'
-}
-
-get_lvm_status() {
-  [ "$(lsblk | grep -c "lvm")" -gt 0 ] && echo "Yes" || echo "No"
-}
-
-get_tcp_connections() {
-  ss -ta | grep -c ESTAB
-}
-
-get_logged_in_users() {
-  users | wc -w
-}
-
-get_network_info() {
-  ip=$(hostname -I | awk '{print $1}')
-  mac=$(ip link | awk '/link\/ether/ {print $2}')
-  echo "IP $ip (MAC: $mac)"
-}
-
-get_sudo_command_count() {
-  journalctl _COMM=sudo | grep COMMAND | wc -l
-}
-
-# Display system information
-wall "
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                  SYSTEM INFORMATION           
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-$(print_info "Architecture" "$(get_architecture)")
-$(print_info "CPU Info" "$(get_cpu_info)")
-$(print_info "Memory Usage" "$(get_memory_info)")
-$(print_info "Disk Usage" "$(get_disk_info)")
-$(print_info "CPU Load" "$(get_cpu_load)")
-$(print_info "Last Boot" "$(get_last_boot)")
-$(print_info "LVM Active" "$(get_lvm_status)")
-$(print_info "TCP Connections" "$(get_tcp_connections) established")
-$(print_info "Logged-in Users" "$(get_logged_in_users)")
-$(print_info "Network" "$(get_network_info)")
-$(print_info "Sudo Commands Used" "$(get_sudo_command_count)")
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-"
-
-```
-
----
-
-## **4. File Searching Commands**
-
-- **Find a File by Name**:
-    
-    ```bash
-    find /path/to/search -name "filename"
-    
-    ```
-    
-- **Search Case-Insensitive**:
-    
-    ```bash
-    find /path/to/search -iname "filename"
-    
-    ```
-    
-- **Locate Command**:
-    - Update database:
+- **Test SSH**:
+    - Connect as a user:
         
         ```bash
-        sudo updatedb
-        
-        ```
-        
-    - Search:
-        
-        ```bash
-        locate filename
+        ssh <username>@<ip_address> -p 4242
         
         ```
         
 
 ---
 
-## **5. Useful Commands**
+### **2.6 Monitoring Script**
 
-- **Check Running Services**:
+- **Purpose**: Displays system stats every 10 minutes via `cron`.
+- **Key Information Displayed**:
+    - Architecture, CPU info, memory usage, disk usage, CPU load, last boot, active connections, and more.
+- **Important Commands**:
     
     ```bash
-    sudo systemctl list-units --type=service
+    uname -a        # Architecture
+    free -m         # Memory usage
+    df -h           # Disk usage
+    vmstat          # CPU load
+    ss -ta          # TCP connections
+    who -b          # Last boot
+    hostname -I     # IP address
+    ip link         # MAC address
     
     ```
     
-- **List All Open Ports**:
+- **Verify Cron Job**:
+    
+    ```bash
+    crontab -l
+    
+    ```
+    
+
+---
+
+## **3. Useful Commands**
+
+- **List Users**:
+    
+    ```bash
+    getent passwd
+    
+    ```
+    
+- **List Groups**:
+    
+    ```bash
+    getent group
+    
+    ```
+    
+- **Show Open Ports**:
     
     ```bash
     sudo ss -tuln
     
     ```
     
-- **Display Disk Usage**:
+- **Display Running Services**:
     
     ```bash
-    df -h
-    
-    ```
-    
-- **Show RAM Usage**:
-    
-    ```bash
-    free -h
-    
-    ```
-    
-- **Logged-in Users**:
-    
-    ```bash
-    who
+    sudo systemctl list-units --type=service
     
     ```
     
 
 ---
 
-## **6. Bonus Section**
+## **4. Key Explanations**
 
-- **Partitions**:
-    - Verify partition structure:
-        
-        ```bash
-        lsblk
-        
-        ```
-        
-- **WordPress Setup**:
-    - Ensure services are running:
-        
-        ```bash
-        sudo systemctl status lighttpd mariadb
-        
-        ```
-        
-    - Check PHP integration with Lighttpd.
+- **getent**: Queries system databases (e.g., `passwd`, `group`).
+- **LVM**: Logical Volume Manager allows flexible disk partition management.
+- **UFW**: Firewall tool for filtering incoming/outgoing network traffic.
+- **Sudo Logs**: Tracks commands run with `sudo` for accountability.
+- **Monitoring**: Identifies potential system issues early (e.g., high CPU usage).
+
+---
