@@ -296,3 +296,104 @@
 - **Monitoring**: Identifies potential system issues early (e.g., high CPU usage).
 
 ---
+
+# **Fail2ban Setup Cheat Sheet**
+
+## **What is Fail2ban?**
+
+Fail2ban monitors log files for suspicious activity (e.g., failed login attempts) and bans malicious IPs to protect your server.
+
+---
+
+## **Setup Steps**
+
+1. **Install Fail2ban**:
+    
+    ```bash
+    sudo apt update
+    sudo apt install fail2ban -y
+    
+    ```
+    
+2. **Enable and Start the Service**:
+    
+    ```bash
+    sudo systemctl enable fail2ban
+    sudo systemctl start fail2ban
+    
+    ```
+    
+3. **Copy the Configuration File**:
+    
+    ```bash
+    sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+    
+    ```
+    
+4. **Edit `jail.local`**:
+    - Open the file:
+        
+        ```bash
+        sudo nano /etc/fail2ban/jail.local
+        
+        ```
+        
+    - Enable SSH protection:
+        
+        ```
+        sshd]
+        enabled = true
+        port = 4242
+        maxretry = 3
+        bantime = 3600
+        
+        ```
+        
+5. **Restart Fail2ban**:
+    
+    ```bash
+    sudo systemctl restart fail2ban
+    
+    ```
+    
+
+---
+
+## **Commands for Monitoring**
+
+1. **Check Status**:
+    
+    ```bash
+    sudo fail2ban-client status
+    
+    ```
+    
+2. **View Specific Jail (e.g., SSH)**:
+    
+    ```bash
+    sudo fail2ban-client status sshd
+    
+    ```
+    
+3. **Unban an IP**:
+    
+    ```bash
+    sudo fail2ban-client set sshd unbanip <ip_address>
+    
+    ```
+    
+4. **View Logs**:
+    
+    ```bash
+    sudo tail -f /var/log/fail2ban.log
+    
+    ```
+    
+
+---
+
+## **How it Works**
+
+- **What it Does**: Bans IPs with too many failed login attempts (default: SSH).
+- **Customizable**: You can adjust `bantime`, `maxretry`, and monitored services.
+- **Example**: After 3 failed SSH logins on port 4242, the IP will be banned for 1 hour.
