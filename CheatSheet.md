@@ -2,6 +2,8 @@
 
 ## **1. Preliminary Setup**
 
+sudo crontab -u root -e
+
 - **Repository Check**:
     - Ensure the repository contains `signature.txt` with the correct VM signature:
         
