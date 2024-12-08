@@ -10,6 +10,8 @@
         
         ```
 GUI ? >> systemctl get-default
+echo $XDG_SESSION_TYPE
+
 
     - Compare the result with the content of `signature.txt`.
 - **Launch VM**:
