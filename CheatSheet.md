@@ -9,7 +9,8 @@
         sha1sum <vm>.vdi
         
         ```
-        
+GUI ? >> systemctl get-default
+
     - Compare the result with the content of `signature.txt`.
 - **Launch VM**:
     - Verify that the VM boots correctly and **no GUI** is installed.
