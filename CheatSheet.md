@@ -297,6 +297,194 @@
 
 ---
 
+# **Lighttpd Cheat Sheet**
+
+## **1. What is Lighttpd?**
+
+- A lightweight, fast, and resource-efficient web server.
+- Ideal for static websites, small dynamic web apps, or limited-resource environments.
+
+---
+
+## **2. Installation**
+
+### **Install Lighttpd**:
+
+```bash
+sudo apt update
+sudo apt install lighttpd -y
+
+```
+
+### **Enable and Start the Service**:
+
+```bash
+sudo systemctl enable lighttpd
+sudo systemctl start lighttpd
+
+```
+
+### **Verify Installation**:
+
+- Check service status:
+    
+    ```bash
+    sudo systemctl status lighttpd
+    
+    ```
+    
+- Access the default page in your browser:
+    - `http://<your_server_ip>`
+
+---
+
+## **3. Configuration**
+
+### **Edit Main Configuration File**:
+
+- Open the file:
+    
+    ```bash
+    sudo nano /etc/lighttpd/lighttpd.conf
+    
+    ```
+    
+
+### **Common Configurations**:
+
+- **Change Server Port**:
+    
+    ```
+    server.port = 8080
+    
+    ```
+    
+- **Set Document Root**:
+    
+    ```
+    server.document-root = "/var/www/html"
+    
+    ```
+    
+- **Enable HTTPS (if SSL is configured)**:
+    
+    ```
+    $SERVER["socket"] == ":443" {
+        ssl.engine = "enable"
+        ssl.pemfile = "/path/to/certificate.pem"
+    }
+    
+    ```
+    
+
+---
+
+## **4. Serving Content**
+
+### **Serve Custom Content**:
+
+- Place files in the document root:Example content:
+    
+    ```bash
+    sudo nano /var/www/html/index.html
+    
+    ```
+    
+    ```html
+    <html>
+    <body><h1>Welcome to Lighttpd!</h1></body>
+    </html>
+    
+    ```
+    
+
+### **Restart Lighttpd**:
+
+```bash
+sudo systemctl restart lighttpd
+
+```
+
+---
+
+## **5. Logs**
+
+- **Access Log**:
+    
+    ```bash
+    sudo tail -f /var/log/lighttpd/access.log
+    
+    ```
+    
+- **Error Log**:
+    
+    ```bash
+    sudo tail -f /var/log/lighttpd/error.log
+    
+    ```
+    
+
+---
+
+## **6. Modules**
+
+### **Enable Modules**:
+
+- Enable a module:Example:
+    
+    ```bash
+    sudo lighty-enable-mod <module_name>
+    
+    ```
+    
+    ```bash
+    sudo lighty-enable-mod rewrite
+    
+    ```
+    
+- Restart Lighttpd:
+    
+    ```bash
+    sudo systemctl restart lighttpd
+    
+    ```
+    
+
+### **List Available Modules**:
+
+```bash
+ls /usr/share/lighttpd
+
+```
+
+---
+
+## **7. Firewall**
+
+- Open the Lighttpd port (default: 80, or custom like 8080):
+    
+    ```bash
+    sudo ufw allow 80
+    sudo ufw allow 8080
+    sudo ufw reload
+    
+    ```
+    
+
+---
+
+## **8. Key Commands**
+
+| **Command** | **Purpose** |
+| --- | --- |
+| `sudo systemctl status lighttpd` | Check service status |
+| `sudo systemctl start lighttpd` | Start Lighttpd |
+| `sudo systemctl stop lighttpd` | Stop Lighttpd |
+| `sudo systemctl restart lighttpd` | Restart Lighttpd |
+| `sudo systemctl enable lighttpd` | Enable Lighttpd at startup |
+
+---
+
 # **Fail2ban Setup Cheat Sheet**
 
 ## **What is Fail2ban?**
@@ -397,3 +585,5 @@ Fail2ban monitors log files for suspicious activity (e.g., failed login attempts
 - **What it Does**: Bans IPs with too many failed login attempts (default: SSH).
 - **Customizable**: You can adjust `bantime`, `maxretry`, and monitored services.
 - **Example**: After 3 failed SSH logins on port 4242, the IP will be banned for 1 hour.
+
+---
